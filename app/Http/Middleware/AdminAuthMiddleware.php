@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class AdminAuthMiddleware
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function handle(Request $request, Closure $next)
+    {
+        // dd(url()->current());
+
+        if(!empty(Auth::user())){
+            //if we go to register page or login page
+            if(url()->current() == route('auth#loginPage') || url()->current() == route('auth#registerPage')){
+                return back();
+            }
+
+            if(Auth::user()->role == 'user'){
+                // abort(404);
+                return back();
+            }
+
+            return $next($request);
+
+        }; // login state
+
+        return $next($request);
+    }
+}
